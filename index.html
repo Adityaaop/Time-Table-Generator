@@ -1,124 +1,205 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Automated College Time Table Generator</title>
-  <!-- Font Awesome 6 (free) for icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <!-- External CSS -->
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Timetable Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- navigation -->
-  <div class="container">
-    <nav class="navbar">
-      <div class="logo">
-        <i class="fas fa-table-cells-large"></i> 
-        TimetableGen
+<div class="app">
+
+  <!-- ── HEADER ── -->
+  <header>
+    <div class="logo">
+      <div class="logo-icon">📅</div>
+      <div>
+        <h1>TT<span>Generator</span></h1>
+        <div style="font-size:11px;color:var(--text-dim);margin-top:2px;">Timetable Generator</div>
       </div>
-      <ul class="nav-links">
-        <li><a href="#">Home</a></li>
-        <li><a href="#">Features</a></li>
-        <li><a href="#">About</a></li>
-        <li><a href="#">Contact</a></li>
-      </ul>
-      <a href="#" class="btn btn-outline"><i class="fas fa-user-circle"></i> Sign In</a>
-    </nav>
+    </div>
+    <span class="badge">ENGINEERING</span>
+  </header>
+
+  <!-- ── STEP TABS ── -->
+  <div class="steps">
+    <button class="step-btn active" onclick="goStep(1)" id="tab1"><span class="num">1</span> Configuration</button>
+    <button class="step-btn" onclick="goStep(2)" id="tab2"><span class="num">2</span> Subjects & Teachers</button>
+    <button class="step-btn" onclick="goStep(3)" id="tab3"><span class="num">3</span> Generate Timetable</button>
   </div>
 
-  <!-- hero / main landing -->
-  <section class="hero">
-    <div class="container hero-grid">
-      <!-- left text -->
-      <div class="hero-content">
-        <h1>Automated College Time Table Generator</h1>
-        <p>Intelligent scheduling that resolves conflicts, respects teacher preferences, and builds optimal timetables in minutes — not days.</p>
-        <div class="hero-buttons">
-          <a href="#" class="btn"><i class="fas fa-calendar-plus"></i> Generate now</a>
-          <a href="#" class="btn btn-outline"><i class="fas fa-play"></i> Watch demo</a>
+  <!-- ═══════════════════════════
+       STEP 1 — CONFIGURATION
+  ═══════════════════════════ -->
+  <div class="panel active" id="step1">
+    <p class="section-title">// Basic Configuration</p>
+    <div class="card">
+      <div class="form-grid">
+        <div>
+          <label>College / Institute Name</label>
+          <input type="text" id="collegeName" value="Engineering Institute">
         </div>
-      </div>
-
-      <!-- right preview (visual timetable) -->
-      <div class="timetable-preview">
-        <div class="preview-header">
-          <span><i class="fas fa-calendar-week"></i> Weekly preview</span>
-          <span><i class="fas fa-download"></i> Export</span>
+        <div>
+          <label>Department</label>
+          <input type="text" id="department" value="Computer Science & Engineering">
         </div>
-        <!-- 5 days x 4 periods grid = 20 cells -->
-        <div class="preview-grid">
-          <div class="grid-item">CS101</div>
-          <div class="grid-item">MA201</div>
-          <div class="grid-item">PHY</div>
-          <div class="grid-item">ENG</div>
-          <div class="grid-item">LAB</div>
-          <div class="grid-item">CS102</div>
-          <div class="grid-item">MA202</div>
-          <div class="grid-item">PHY-L</div>
-          <div class="grid-item">EVS</div>
-          <div class="grid-item">CS-L</div>
-          <div class="grid-item">MATH</div>
-          <div class="grid-item">CHEM</div>
-          <div class="grid-item">CS103</div>
-          <div class="grid-item">MA203</div>
-          <div class="grid-item">PHY</div>
-          <div class="grid-item">SPO</div>
-          <div class="grid-item">CS104</div>
-          <div class="grid-item">MA204</div>
-          <div class="grid-item">LIB</div>
-          <div class="grid-item">SEM</div>
+        <div>
+          <label>Year / Semester</label>
+          <select id="semester">
+            <option>3rd Year – Sem 5</option>
+            <option selected>3rd Year – Sem 6</option>
+            <option>4th Year – Sem 7</option>
+            <option>4th Year – Sem 8</option>
+          </select>
         </div>
-        <!-- day labels -->
-        <div class="day-labels">
-          <span>MON</span>
-          <span>TUE</span>
-          <span>WED</span>
-          <span>THU</span>
-          <span>FRI</span>
+        <div>
+          <label>Section</label>
+          <input type="text" id="section" value="A">
         </div>
-        <p style="text-align: right; font-size: 0.75rem; color: #94a3b8; margin-top: 0.7rem;">*sample data · no clashes</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- features section -->
-  <section class="features">
-    <div class="container">
-      <h2 class="section-title">Why academicians love it</h2>
-      <div class="features-grid">
-        <div class="feature-card">
-          <i class="fas fa-microchip feature-icon"></i>
-          <h3>AI clash resolver</h3>
-          <p>Automatically detects faculty, room, and student group conflicts. Reassigns intelligently.</p>
+        <div>
+          <label>Periods Per Day</label>
+          <select id="periodsPerDay" onchange="buildTimingsGrid()">
+            <option value="6">6 Periods</option>
+            <option value="7" selected>7 Periods</option>
+            <option value="8">8 Periods</option>
+          </select>
         </div>
-        <div class="feature-card">
-          <i class="fas fa-gear feature-icon"></i>
-          <h3>Multi‑department</h3>
-          <p>Handles combined courses, electives, and lab rotations across any number of departments.</p>
-        </div>
-        <div class="feature-card">
-          <i class="fas fa-chart-simple feature-icon"></i>
-          <h3>Real‑time analytics</h3>
-          <p>Visualize room usage, teacher workload, and free slots. Optimize resources instantly.</p>
-        </div>
-        <div class="feature-card">
-          <i class="fas fa-cloud-arrow-up feature-icon"></i>
-          <h3>Export anywhere</h3>
-          <p>PDF, Excel, or shareable link. Notify students & staff with one click.</p>
+        <div>
+          <label>Working Days</label>
+          <select id="workingDays">
+            <option value="5">Mon – Fri (5 days)</option>
+            <option value="6" selected>Mon – Sat (6 days)</option>
+          </select>
         </div>
       </div>
     </div>
-  </section>
 
-  <!-- simple footer -->
-  <footer class="footer">
-    <div class="container">
-      <p>© 2025 TimetableGen — Automated College Time Table Generator. All rights reserved.</p>
+    <p class="section-title">// Period Timings</p>
+    <div class="card">
+      <div class="form-grid" id="timingsGrid"></div>
     </div>
-  </footer>
 
+    <div class="nav-footer">
+      <span></span>
+      <button class="btn btn-primary" onclick="goStep(2)">Next → Add Subjects</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════
+       STEP 2 — SUBJECTS & TEACHERS
+  ═══════════════════════════════ -->
+  <div class="panel" id="step2">
+    <p class="section-title">// Add Subject</p>
+    <div class="card">
+      <div class="form-grid">
+        <div>
+          <label>Subject Name</label>
+          <input type="text" id="subName" placeholder="e.g. Data Structures">
+        </div>
+        <div>
+          <label>Subject Code</label>
+          <input type="text" id="subCode" placeholder="e.g. CS501">
+        </div>
+        <div>
+          <label>Teacher Name</label>
+          <input type="text" id="subTeacher" placeholder="e.g. Dr. Sharma">
+        </div>
+        <div>
+          <label>Type</label>
+          <select id="subType">
+            <option value="theory">Theory</option>
+            <option value="Core">Core</option>
+            <option value="lab">Lab (2 periods)</option>            
+            <option value="elective">Elective</option>
+          </select>
+        </div>
+        <div>
+          <label>Periods / Week</label>
+          <input type="number" id="subPeriods" min="1" max="10" value="4">
+        </div>
+        <div>
+          <label>Color Theme</label>
+          <select id="subColor">
+            <option value="#00e5ff,#003344">Cyan</option>
+            <option value="#a8ff78,#1a3300">Green</option>
+            <option value="#ff6b35,#3d1500">Orange</option>
+            <option value="#c084fc,#2d1050">Purple</option>
+            <option value="#fbbf24,#3d2a00">Yellow</option>
+            <option value="#f472b6,#3d0020">Pink</option>
+            <option value="#34d399,#003322">Emerald</option>
+            <option value="#60a5fa,#001233">Blue</option>
+          </select>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="addSubject()">＋ Add Subject</button>
+        <button class="btn btn-secondary" onclick="loadSample()">📋 Load Sample (CSE Sem 6)</button>
+      </div>
+    </div>
+
+    <p class="section-title">// Subject List</p>
+    <div id="subjectList">
+      <div class="empty">
+        <div class="empty-icon">📚</div>
+        <p>No subjects added yet.</p>
+      </div>
+    </div>
+
+    <div class="nav-footer">
+      <button class="btn btn-secondary" onclick="goStep(1)">← Back</button>
+      <button class="btn btn-primary" onclick="goStep(3)">Next → Generate</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════
+       STEP 3 — GENERATE TIMETABLE
+  ═══════════════════════════════ -->
+  <div class="panel" id="step3">
+    <p class="section-title">// Generated Timetable</p>
+
+    <div class="card">
+      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+        <button class="btn btn-generate" onclick="generateTimetable()">⚡ Generate Timetable</button>
+        <button class="btn btn-secondary" onclick="generateTimetable()">🔀 Regenerate</button>
+        <button class="btn btn-secondary" onclick="window.print()">🖨️ Print</button>
+        <button class="btn btn-secondary" onclick="exportCSV()">📥 Export CSV</button>
+      </div>
+      <div style="margin-top:12px;font-size:12px;color:var(--text-dim);">
+        💡 Each click of Generate creates a new conflict-free layout
+      </div>
+    </div>
+
+    <div id="statsRow" class="stats-row" style="display:none"></div>
+    <div id="legendRow" class="legend" style="display:none"></div>
+
+    <div class="card" style="padding:0;overflow:hidden;">
+      <div id="ttHeader" style="padding:20px 24px;border-bottom:1px solid var(--border);display:none;">
+        <div style="font-size:18px;font-weight:800;" id="ttTitle"></div>
+        <div style="font-size:12px;color:var(--text-dim);margin-top:4px;font-family:'Space Mono',monospace;" id="ttSubtitle"></div>
+      </div>
+      <div class="tt-wrapper">
+        <div id="timetableOut">
+          <div class="empty" style="padding:80px 20px;">
+            <div class="empty-icon">⚡</div>
+            <p>Click "Generate Timetable" to auto-build your schedule</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-footer">
+      <button class="btn btn-secondary" onclick="goStep(2)">← Back</button>
+      <span style="font-size:12px;color:var(--text-dim);font-family:'Space Mono',monospace;">AUTO-GENERATED · CONFLICT-FREE</span>
+    </div>
+  </div>
+
+</div><!-- .app -->
+
+<div class="toast" id="toast"></div>
+
+<!-- Link JS last so DOM is ready -->
+<script src="script.js"></script>
 </body>
 </html>
-88
