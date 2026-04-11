@@ -310,7 +310,7 @@ function renderTimetable() {
 
       const cell = grid[d][p];
 
-      if (!cell) {n
+      if (!cell) {
         // Empty slot
         html += `<td></td>`;
       } else {
