@@ -498,7 +498,7 @@ select option { background: var(--surface2); }
 }
 
 /* ═══════════════════════════════════════════
-   RESPONSIVE — MOBILE
+   RESPONSIVE - MOBILE
 ═══════════════════════════════════════════ */
 @media (max-width: 640px) {
   .steps      { flex-direction: column; }

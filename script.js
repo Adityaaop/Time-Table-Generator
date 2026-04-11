@@ -310,7 +310,7 @@ function renderTimetable() {
 
       const cell = grid[d][p];
 
-      if (!cell) {
+      if (!cell) {n
         // Empty slot
         html += `<td></td>`;
       } else {
@@ -421,9 +421,8 @@ function showToast(msg) {
   t.style.display = 'block';
   setTimeout(() => { t.style.display = 'none'; }, 2500);
 }
-
-// ═══════════════════════════════════════════════════════
-//  INIT  — run on page load
+//  ═══════════════════════════════════════════════════════
+//INIT  — run when page load
 // ═══════════════════════════════════════════════════════
 
 buildTimingsGrid();
