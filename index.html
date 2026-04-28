@@ -23,16 +23,12 @@
     <span class="badge">ENGINEERING</span>
   </header>
 
-  <!-- ── STEP TABS ── -->
   <div class="steps">
     <button class="step-btn active" onclick="goStep(1)" id="tab1"><span class="num">1</span> Configuration</button>
     <button class="step-btn" onclick="goStep(2)" id="tab2"><span class="num">2</span> Subjects & Teachers</button>
     <button class="step-btn" onclick="goStep(3)" id="tab3"><span class="num">3</span> Generate Timetable</button>
   </div>
 
-  <!-- ═══════════════════════════
-       STEP 1 — CONFIGURATION
-  ═══════════════════════════ -->
   <div class="panel active" id="step1">
     <p class="section-title">// Basic Configuration</p>
     <div class="card">
@@ -86,10 +82,6 @@
       <button class="btn btn-primary" onclick="goStep(2)">Next → Add Subjects</button>
     </div>
   </div>
-
-  <!-- ═══════════════════════════════
-       STEP 2 — SUBJECTS & TEACHERS
-  ═══════════════════════════════ -->
   <div class="panel" id="step2">
     <p class="section-title">// Add Subject</p>
     <div class="card">
@@ -152,10 +144,6 @@
       <button class="btn btn-primary" onclick="goStep(3)">Next → Generate</button>
     </div>
   </div>
-
-  <!-- ═══════════════════════════════
-       STEP 3 — GENERATE  TIMETABLE
-  ═══════════════════════════════ -->
   <div class="panel" id="step3">
     <p class="section-title">// Generated Timetable</p>
 
@@ -191,15 +179,13 @@
 
     <div class="nav-footer">
       <button class="btn btn-secondary" onclick="goStep(2)">← Back</button>
-      <span style="font-size:12px;color:var(--text-dim);font-family:'Space Mono',monospace;">AUTO-GENERATED · CONFLICT-FREE</span>
+      <span style="font-size:12px;color:var(--text-dim);font-family:'Space Mono',monospace;">AUTO-GENERATED · CONFLICT-FREE · 🔥 FIREBASE BACKED</span>
     </div>
   </div>
 
 </div><!-- .app -->
 
 <div class="toast" id="toast"></div>
-
-<!-- Link JS last so DOM is ready -->
-<script src="script.js"></script>
+<script type="module" src="script.js"></script>
 </body>
 </html>
