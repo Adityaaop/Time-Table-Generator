@@ -1,4 +1,13 @@
-.DS_Store
-Untitled/
-Thumbs.db
+# Credentials
+.env
+
+# Dependencies
 node_modules/
+
+# Mac/Windows System Files
+.DS_Store
+Thumbs.db
+
+# Other
+Untitled/
+*.log

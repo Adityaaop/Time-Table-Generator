@@ -338,3 +338,77 @@ window.generateTimetable = generateTimetable;
 window.exportCSV         = exportCSV;
 
 buildTimingsGrid();
+// ── MongoDB API Functions ────────────────────────────────────
+
+async function saveTimetable() {
+  if (!timetableData) { showToast('⚠ Generate a timetable first'); return; }
+
+  const payload = {
+    collegeName: document.getElementById('collegeName').value,
+    department:  document.getElementById('department').value,
+    semester:    document.getElementById('semester').value,
+    section:     document.getElementById('section').value,
+    grid:        timetableData.grid,
+    subjects:    subjects
+  };
+
+  try {
+    const res  = await fetch('/api/timetables', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast('✅ Saved to MongoDB! ID: ' + data.id);
+    } else {
+      showToast('❌ Save failed: ' + data.error);
+    }
+  } catch (err) {
+    showToast('❌ Server error: ' + err.message);
+  }
+}
+
+async function loadSavedTimetables() {
+  try {
+    const res  = await fetch('/api/timetables');
+    const list = await res.json();
+
+    if (!list.length) { showToast('No saved timetables found'); return; }
+
+    // Show a simple picker (you can make this a modal later)
+    const options = list.map((t, i) =>
+      `${i + 1}. ${t.collegeName} – ${t.semester} – ${t.section} (${new Date(t.createdAt).toLocaleDateString()})`
+    ).join('\n');
+
+    const choice = prompt('Choose a timetable to load:\n\n' + options + '\n\nEnter number:');
+    const index  = parseInt(choice) - 1;
+
+    if (isNaN(index) || index < 0 || index >= list.length) return;
+
+    const res2   = await fetch('/api/timetables/' + list[index]._id);
+    const saved  = await res2.json();
+
+    subjects      = saved.subjects;
+    timetableData = {
+      grid:        saved.grid,
+      days:        saved.grid.length === 6 ? DAYS6 : DAYS5,
+      timings:     subjects[0]?.timings || [],
+      pp:          saved.grid[0]?.length || 7,
+      breakPeriod: Math.floor((saved.grid[0]?.length || 7) / 2)
+    };
+
+    renderSubjects();
+    renderTimetable();
+    renderStats();
+    renderLegend();
+    goStep(3);
+    showToast('✅ Timetable loaded!');
+
+  } catch (err) {
+    showToast('❌ Load error: ' + err.message);
+  }
+}
+
+window.saveTimetable       = saveTimetable;
+window.loadSavedTimetables = loadSavedTimetables;
