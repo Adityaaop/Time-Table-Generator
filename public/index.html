@@ -10,6 +10,7 @@
 <body>
 
 <div class="app">
+
   <!-- ── HEADER ── -->
   <header>
     <div class="logo">
@@ -81,6 +82,7 @@
       <button class="btn btn-primary" onclick="goStep(2)">Next → Add Subjects</button>
     </div>
   </div>
+
   <div class="panel" id="step2">
     <p class="section-title">// Add Subject</p>
     <div class="card">
@@ -102,7 +104,7 @@
           <select id="subType">
             <option value="theory">Theory</option>
             <option value="Core">Core</option>
-            <option value="lab">Lab (2 periods)</option>            
+            <option value="lab">Lab (2 periods)</option>
             <option value="elective">Elective</option>
           </select>
         </div>
@@ -143,6 +145,7 @@
       <button class="btn btn-primary" onclick="goStep(3)">Next → Generate</button>
     </div>
   </div>
+
   <div class="panel" id="step3">
     <p class="section-title">// Generated Timetable</p>
 
@@ -178,13 +181,13 @@
 
     <div class="nav-footer">
       <button class="btn btn-secondary" onclick="goStep(2)">← Back</button>
-      <span style="font-size:12px;color:var(--text-dim);font-family:'Space Mono',monospace;">AUTO-GENERATED · CONFLICT-FREE · 🔥 FIREBASE BACKED</span>
+      <span style="font-size:12px;color:var(--text-dim);font-family:'Space Mono',monospace;">AUTO-GENERATED · CONFLICT-FREE</span>
     </div>
   </div>
 
 </div><!-- .app -->
 
 <div class="toast" id="toast"></div>
-<script type="module" src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>

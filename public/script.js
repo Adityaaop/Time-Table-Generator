@@ -1,13 +1,3 @@
-import { db } from './firebase-config.js';
-import {
-  collection,
-  addDoc,
-  getDocs,
-  deleteDoc,
-  doc,
-  serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
 const DAYS5 = ['Monday','Tuesday','Wednesday','Thursday','Friday'];
 const DAYS6 = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
@@ -17,12 +7,9 @@ const TIMES = {
   8: ['8:30–9:20','9:20–10:10','10:20–11:10','11:10–12:00','12:40–1:30','1:30–2:20','2:20–3:10','3:10–4:00']
 };
 
-
 let subjects      = [];
 let timetableData = null;
-
-const COLLECTION = 'subjects';
-
+let nextId        = 1;
 
 function goStep(n) {
   document.querySelectorAll('.panel')
@@ -30,7 +17,6 @@ function goStep(n) {
   document.querySelectorAll('.step-btn')
     .forEach((b, i) => b.classList.toggle('active', i + 1 === n));
 }
-
 
 function buildTimingsGrid() {
   const pp       = parseInt(document.getElementById('periodsPerDay').value);
@@ -49,7 +35,7 @@ function buildTimingsGrid() {
   }
 }
 
-async function addSubject() {
+function addSubject() {
   const name    = document.getElementById('subName').value.trim();
   const code    = document.getElementById('subCode').value.trim();
   const teacher = document.getElementById('subTeacher').value.trim();
@@ -65,73 +51,34 @@ async function addSubject() {
   if (!name)    { showToast('⚠ Enter subject name');  return; }
   if (!teacher) { showToast('⚠ Enter teacher name');  return; }
 
-  const subjectDoc = {
+  const subject = {
+    id: String(nextId++),
     name,
     code,
     teacher,
     type,
     periods,
     periodsPerDay: pp,
-    timings,                 
-    fg:      colors[0],
-    bg:      colors[1],
-    createdAt: serverTimestamp()
+    timings,
+    fg: colors[0],
+    bg: colors[1]
   };
 
-  try {
-    showToast('⏳ Saving to Firebase…');
+  subjects.push(subject);
 
-    const docRef = await addDoc(collection(db, COLLECTION), subjectDoc);
+  document.getElementById('subName').value    = '';
+  document.getElementById('subCode').value    = '';
+  document.getElementById('subTeacher').value = '';
+  document.getElementById('subPeriods').value = 4;
 
-    subjects.push({ ...subjectDoc, id: docRef.id });
-
-    document.getElementById('subName').value    = '';
-    document.getElementById('subCode').value    = '';
-    document.getElementById('subTeacher').value = '';
-    document.getElementById('subPeriods').value = 4;
-
-    renderSubjects();
-    showToast(`✓ ${name} saved to Firebase`);
-
-  } catch (err) {
-    console.error('Firebase write error:', err);
-    showToast('❌ Firebase error — check console');
-  }
+  renderSubjects();
+  showToast(`✓ ${name} added`);
 }
 
-async function loadSubjectsFromDB() {
-  try {
-    showToast('⏳ Loading from Firebase…');
-    const snapshot = await getDocs(collection(db, COLLECTION));
-
-    subjects = [];
-    snapshot.forEach(docSnap => {
-      subjects.push({ ...docSnap.data(), id: docSnap.id });
-    });
-
-    renderSubjects();
-    showToast(`✓ Loaded ${subjects.length} subject(s) from Firebase`);
-
-  } catch (err) {
-    console.error('Firebase read error:', err);
-    showToast('❌ Could not load from Firebase');
-  }
-}
-
-async function removeSubject(id) {
-  try {
-    // Delete from Firestore using the document ID
-    await deleteDoc(doc(db, COLLECTION, id));
-
-    // Remove from local state
-    subjects = subjects.filter(s => s.id !== id);
-    renderSubjects();
-    showToast('✓ Subject removed from Firebase');
-
-  } catch (err) {
-    console.error('Firebase delete error:', err);
-    showToast('❌ Could not delete — check console');
-  }
+function removeSubject(id) {
+  subjects = subjects.filter(s => s.id !== id);
+  renderSubjects();
+  showToast('✓ Subject removed');
 }
 
 function renderSubjects() {
@@ -159,9 +106,6 @@ function renderSubjects() {
             <div class="subject-meta">
               👨‍🏫 ${s.teacher} · ${s.type.toUpperCase()} · ${s.periods} periods/wk
             </div>
-            <div class="subject-meta" style="margin-top:3px;color:#34d399;">
-              🔥 Saved in Firebase
-            </div>
           </div>
           <button class="remove-btn" onclick="removeSubject('${s.id}')">✕</button>
         </div>
@@ -169,7 +113,12 @@ function renderSubjects() {
     </div>`;
 }
 
-async function loadSample() {
+function loadSample() {
+  const pp      = parseInt(document.getElementById('periodsPerDay').value);
+  const timings = [];
+  for (let i = 0; i < pp; i++)
+    timings.push(document.getElementById('t' + i)?.value || `P${i + 1}`);
+
   const samples = [
     { name:'Compiler Design',   code:'CS601', teacher:'Dr. Ramesh Kumar',  type:'theory',   periods:4, fg:'#00e5ff', bg:'#003344' },
     { name:'Computer Networks', code:'CS602', teacher:'Prof. Anita Singh', type:'theory',   periods:4, fg:'#a8ff78', bg:'#1a3300' },
@@ -180,30 +129,15 @@ async function loadSample() {
     { name:'Compiler Lab',      code:'CS652', teacher:'Dr. Ramesh Kumar',  type:'lab',      periods:2, fg:'#60a5fa', bg:'#001233' },
   ];
 
-  showToast('⏳ Saving sample data to Firebase…');
-  subjects = [];
+  subjects = samples.map(s => ({
+    ...s,
+    id: String(nextId++),
+    periodsPerDay: pp,
+    timings
+  }));
 
-  const pp      = parseInt(document.getElementById('periodsPerDay').value);
-  const timings = [];
-  for (let i = 0; i < pp; i++)
-    timings.push(document.getElementById('t' + i)?.value || `P${i + 1}`);
-
-  try {
-    for (const s of samples) {
-      const docRef = await addDoc(collection(db, COLLECTION), {
-        ...s,
-        periodsPerDay: pp,
-        timings,
-        createdAt: serverTimestamp()
-      });
-      subjects.push({ ...s, id: docRef.id, periodsPerDay: pp, timings });
-    }
-    renderSubjects();
-    showToast('✓ Sample data saved to Firebase!');
-  } catch (err) {
-    console.error(err);
-    showToast('❌ Firebase error saving sample data');
-  }
+  renderSubjects();
+  showToast('✓ Sample data loaded!');
 }
 
 function generateTimetable() {
@@ -355,7 +289,6 @@ function renderStats() {
   ).join('');
 }
 
-
 function renderLegend() {
   const el = document.getElementById('legendRow');
   el.style.display = 'flex';
@@ -366,7 +299,6 @@ function renderLegend() {
     </div>`
   ).join('');
 }
-
 
 function exportCSV() {
   if (!timetableData) { showToast('⚠ Generate first'); return; }
@@ -397,13 +329,12 @@ function showToast(msg) {
   setTimeout(() => { t.style.display = 'none'; }, 2500);
 }
 
-window.goStep           = goStep;
-window.buildTimingsGrid = buildTimingsGrid;
-window.addSubject       = addSubject;
-window.removeSubject    = removeSubject;
-window.loadSample       = loadSample;
+window.goStep            = goStep;
+window.buildTimingsGrid  = buildTimingsGrid;
+window.addSubject        = addSubject;
+window.removeSubject     = removeSubject;
+window.loadSample        = loadSample;
 window.generateTimetable = generateTimetable;
-window.exportCSV        = exportCSV;
+window.exportCSV         = exportCSV;
 
 buildTimingsGrid();
-loadSubjectsFromDB();   
