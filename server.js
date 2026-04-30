@@ -8,12 +8,10 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('public')); // serves your HTML/CSS/JS
 
-// ── Connect to MongoDB ──────────────────────────────────────
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('✅ MongoDB connected'))
   .catch(err => console.error('❌ MongoDB error:', err));
 
-// ── Schemas ─────────────────────────────────────────────────
 const subjectSchema = new mongoose.Schema({
   name:     String,
   code:     String,
@@ -37,9 +35,6 @@ const timetableSchema = new mongoose.Schema({
 
 const Timetable = mongoose.model('Timetable', timetableSchema);
 
-// ── Routes ───────────────────────────────────────────────────
-
-// Save a timetable
 app.post('/api/timetables', async (req, res) => {
   try {
     const tt = new Timetable(req.body);
@@ -50,7 +45,6 @@ app.post('/api/timetables', async (req, res) => {
   }
 });
 
-// Get all saved timetables
 app.get('/api/timetables', async (req, res) => {
   try {
     const list = await Timetable.find({}, 'collegeName department semester section createdAt');
@@ -60,7 +54,6 @@ app.get('/api/timetables', async (req, res) => {
   }
 });
 
-// Get one timetable by ID
 app.get('/api/timetables/:id', async (req, res) => {
   try {
     const tt = await Timetable.findById(req.params.id);
@@ -71,7 +64,6 @@ app.get('/api/timetables/:id', async (req, res) => {
   }
 });
 
-// Delete a timetable
 app.delete('/api/timetables/:id', async (req, res) => {
   try {
     await Timetable.findByIdAndDelete(req.params.id);
@@ -81,7 +73,6 @@ app.delete('/api/timetables/:id', async (req, res) => {
   }
 });
 
-// ── Start Server ─────────────────────────────────────────────
 app.listen(process.env.PORT, () => {
   console.log(`🚀 Server running at http://localhost:${process.env.PORT}`);
 });
