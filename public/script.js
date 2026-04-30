@@ -321,6 +321,11 @@ function exportCSV() {
   a.click();
   showToast('✓ CSV downloaded');
 }
+function printTimetable() {
+  if (!timetableData) { showToast('⚠ Generate a timetable first'); return; }
+  window.print();
+}
+window.printTimetable = printTimetable;
 
 function showToast(msg) {
   const t = document.getElementById('toast');
@@ -338,7 +343,6 @@ window.generateTimetable = generateTimetable;
 window.exportCSV         = exportCSV;
 
 buildTimingsGrid();
-// ── MongoDB API Functions ────────────────────────────────────
 
 async function saveTimetable() {
   if (!timetableData) { showToast('⚠ Generate a timetable first'); return; }
@@ -376,7 +380,6 @@ async function loadSavedTimetables() {
 
     if (!list.length) { showToast('No saved timetables found'); return; }
 
-    // Show a simple picker (you can make this a modal later)
     const options = list.map((t, i) =>
       `${i + 1}. ${t.collegeName} – ${t.semester} – ${t.section} (${new Date(t.createdAt).toLocaleDateString()})`
     ).join('\n');
